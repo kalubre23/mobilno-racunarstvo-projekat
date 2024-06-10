@@ -12,13 +12,13 @@ export class PlacesService {
       'https://eminentnekretnine.rs/slike/izdavanje-kuca-beograd-EwstDDpDSC.jpg',
       150
     ),
-    new Place('p1', 
+    new Place('p2', 
       'Mirijevo', 
-      'after je na mirijevu', 
+      'after je u mirijevu', 
       'https://eminentnekretnine.rs/slike/izdavanje-kuca-beograd-EwstDDpDSC.jpg',
       420
     ),
-    new Place('p1', 
+    new Place('p3', 
       'Vracar stan', 
       'historical', 
       'https://eminentnekretnine.rs/slike/izdavanje-kuca-beograd-EwstDDpDSC.jpg',
