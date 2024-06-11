@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController, NavController } from '@ionic/angular';
+import { ActionSheetController, ModalController, NavController } from '@ionic/angular';
 import { Place } from '../../place.model';
 import { PlacesService } from '../../places.service';
 import { CreateBookingComponent } from '../../../bookings/create-booking/create-booking.component';
@@ -16,7 +16,8 @@ export class PlaceDetailPage implements OnInit {
   constructor(private route: ActivatedRoute, 
     private navCtrl: NavController,
     private modalCtrl: ModalController,
-    private placesService: PlacesService) { }
+    private placesService: PlacesService,
+    private actionSheetCtrl: ActionSheetController) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(paramMap => {
@@ -38,6 +39,26 @@ export class PlaceDetailPage implements OnInit {
     //ovo prikazuje losu animaciju ako je stack stranica prazan
     // this.router.navigateByUrl('/places/tabs/discover');
     //this.navCtrl.navigateBack('/places/tabs/discover');
+    this.actionSheetCtrl.create({
+      header: 'Choose an action',
+      buttons: [
+        {
+          text: 'Select date',
+          handler: () => {this.openBookingModal('select')}
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        }
+      ]
+    }).then(actionSheetEl => {
+      actionSheetEl.present();
+    });
+    
+  }
+
+  openBookingModal(mode: 'select') {
+    console.log(mode);
     this.modalCtrl.create(
       {component: CreateBookingComponent, 
       componentProps: {selectedPlace: this.place}}
