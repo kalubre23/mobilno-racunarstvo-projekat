@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      {{selectedPlace?.title}}
+      {{ selectedPlace?.title }}
     </ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="onCancel()">
@@ -12,6 +12,117 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <p>{{selectedPlace?.description}}</p>
-  <ion-button color="primary" (click)="onBook()">Book</ion-button>
+  <form #f="ngForm" (ngSubmit)="onBookPlace(f)">
+    <ion-grid>
+      <ion-row>
+        <ion-col sizeSm="6" offsetSm="3">
+          <ion-item>
+            <ion-input
+              label="First name"
+              labelPosttion="floating"
+              type="text"
+              ngModel
+              required
+              name="first-name"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col sizeSm="6" offsetSm="3">
+          <ion-item>
+            <ion-input
+              label="Last name"
+              labelPosttion="floating"
+              type="text"
+              ngModel
+              required
+              name="last-name"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col sizeSm="6" offsetSm="3">
+          <ion-item>
+            <ion-select
+              label="Guest number"
+              [ngModel]="'2'"
+              name="guest-number"
+            >
+              <ion-select-option value="1">1</ion-select-option>
+              <ion-select-option value="2">2</ion-select-option>
+              <ion-select-option value="3">3</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item lines="inset">
+            <ion-label>From</ion-label>
+            <ion-datetime-button class="ion-float-right" datetime="dateFrom"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime  (ionChange)="onChangeDateFrom($event)"
+                  id="dateFrom"
+                  presentation="date"
+                  [formatOptions]="{
+                            date: {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                            }
+                          }"
+                  [value]="selectedPlace.availableFrom.toISOString()"
+                  [min]="selectedPlace.availableFrom.toISOString()"
+                  [max]="selectedPlace.availableTo.toISOString()"
+                ></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item  lines="inset">
+            <ion-label>To</ion-label>
+            <ion-datetime-button datetime="dateTo"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime (ionChange)="onChangeDateTo($event)" 
+                  id="dateTo"
+                  presentation="date"
+                  [formatOptions]="{
+                            date: {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                            }
+                          }"
+                  [value]="selectedPlace.availableFrom.toISOString()"
+                  [min]="selectedPlace.availableFrom.toISOString()"
+                  [max]="selectedPlace.availableTo.toISOString()"
+                ></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!isDateValid">
+        <ion-col>
+          <ion-item>
+            <ion-label color="danger">Date from must be before Date to!</ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-button type="submit" [disabled]="!f.valid || !isDateValid" color="primary" expand="block"
+            >Book</ion-button
+          >
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
 </ion-content>

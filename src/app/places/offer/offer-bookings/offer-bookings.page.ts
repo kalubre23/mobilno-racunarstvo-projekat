@@ -22,7 +22,7 @@ export class OfferBookingsPage implements OnInit {
       }
       const id = paramMap.get('placeId');
       if(id === null){
-        console.log('Id is null');
+        console.log('Id za edit je null u ponudi bookinga');
         return;
       }else {
         this.place = this.placesService.getPlace(id);

@@ -4,9 +4,43 @@
       <ion-back-button defaultHref="/places/tabs/offer"></ion-back-button>
     </ion-buttons>
     <ion-title>Edit offer</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onUpdateOffer()" [disabled]="!form.valid">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-label>Editing item</ion-label>
+  <form [formGroup]="form">
+    <ion-grid>
+      <ion-row>
+        <ion-col sizeSm="6" offsetSm="3">
+          <ion-item>
+            <ion-input label="Title" autocomplete="on" autocorrect="on" labelPlacement="floating"
+              formControlName="title"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('title').valid && form.get('title').touched">
+        <ion-col>
+          <ion-label color="danger">Title is required</ion-label>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col sizeSm="6" offsetSm="3">
+          <ion-item>
+            <ion-textarea formControlName="description" label="Short description" labelPlacement="floating"
+              rows="3"></ion-textarea>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('description').valid && form.get('description').touched">
+        <ion-col>
+          <ion-label color="danger">Description must be between 1 and 150 characters</ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
 </ion-content>

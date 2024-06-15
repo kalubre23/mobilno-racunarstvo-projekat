@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { NgForm, NgModel } from '@angular/forms';
+import { IonDatetime, ModalController } from '@ionic/angular';
 import { Place } from 'src/app/places/place.model';
 
 @Component({
@@ -8,11 +9,19 @@ import { Place } from 'src/app/places/place.model';
   styleUrls: ['./create-booking.component.scss'],
 })
 export class CreateBookingComponent  implements OnInit {
-  @Input() selectedPlace: Place | undefined;
+  @Input() selectedPlace: Place | any;
+  //@ViewChild('dateFrom', { static: true }) dateFrom: IonDatetime | any;
+  private dateFrom: Date | any;
+  private dateTo: Date | any;
+  isDateValid: boolean = false;
 
-  constructor(private modalCtrl: ModalController) { }
+  constructor(private modalCtrl: ModalController) {
+    
+   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.dateFrom, this.dateTo = this.selectedPlace.availableFrom;
+  }
 
   onCancel(){
     this.modalCtrl.dismiss(null, 'cancel');
@@ -20,6 +29,36 @@ export class CreateBookingComponent  implements OnInit {
 
   onBook(){
     this.modalCtrl.dismiss({message: 'Podaci iz modala'}, 'confirm');
+  }
+
+  onChangeDateFrom(event: CustomEvent) {
+    this.dateFrom = new Date(event.detail.value);
+    this.isDateValid = (this.dateTo > this.dateFrom);
+    console.log(this.dateTo, this.dateFrom);
+    console.log(this.isDateValid);
+  }
+
+  onChangeDateTo(event: CustomEvent){
+    this.dateTo = new Date(event.detail.value);
+    this.isDateValid = (this.dateTo > this.dateFrom);
+    console.log(this.dateTo, this.dateFrom);
+    console.log(this.isDateValid);
+  }
+
+  onBookPlace(form: NgForm){
+    if (!form.valid || !this.isDateValid) {
+      console.log('Forma nije validna!!!!!!!!!!');
+      return;
+    }
+    this.modalCtrl.dismiss({
+      bookingData:{
+        firstName: form.value['first-name'],
+        lastName: form.value['last-name'],
+        guestNumber: form.value['guest-number'],
+        startDate: this.dateFrom,
+        endDate: this.dateTo
+      }
+    }, 'confirm')
   }
 
 }

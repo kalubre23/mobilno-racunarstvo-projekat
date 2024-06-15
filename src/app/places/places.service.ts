@@ -10,19 +10,25 @@ export class PlacesService {
       'Beograd na vodi', 
       'beograd na vodi povoljno', 
       'https://eminentnekretnine.rs/slike/izdavanje-kuca-beograd-EwstDDpDSC.jpg',
-      150
+      150,
+      new Date('2024-01-01'),
+      new Date('2024-12-31')
     ),
     new Place('p2', 
       'Mirijevo', 
       'after je u mirijevu', 
       'https://eminentnekretnine.rs/slike/izdavanje-kuca-beograd-EwstDDpDSC.jpg',
-      420
+      420,
+      new Date('2024-01-01'),
+      new Date('2024-12-31')
     ),
     new Place('p3', 
       'Vracar stan', 
       'historical', 
       'https://eminentnekretnine.rs/slike/izdavanje-kuca-beograd-EwstDDpDSC.jpg',
-      69
+      69,
+      new Date('2024-01-01'),
+      new Date('2024-12-31')
     ),
   ];
 
