@@ -85,7 +85,7 @@
       </ion-row>
       <ion-row>
         <ion-col>
-          <ion-item  lines="inset">
+          <ion-item lines="inset">
             <ion-label>To</ion-label>
             <ion-datetime-button datetime="dateTo"></ion-datetime-button>
             <ion-modal [keepContentsMounted]="true">
@@ -98,8 +98,7 @@
                               year: 'numeric',
                               month: '2-digit',
                               day: '2-digit',
-                            }
-                          }"
+                            }}"
                   [value]="selectedPlace.availableFrom.toISOString()"
                   [min]="selectedPlace.availableFrom.toISOString()"
                   [max]="selectedPlace.availableTo.toISOString()"

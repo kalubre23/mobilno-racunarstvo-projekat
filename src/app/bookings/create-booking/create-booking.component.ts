@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { NgForm, NgModel } from '@angular/forms';
-import { IonDatetime, ModalController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
+import { NgForm} from '@angular/forms';
+import { ModalController } from '@ionic/angular';
 import { Place } from 'src/app/places/place.model';
 
 @Component({
@@ -20,7 +20,9 @@ export class CreateBookingComponent  implements OnInit {
    }
 
   ngOnInit() {
-    this.dateFrom, this.dateTo = this.selectedPlace.availableFrom;
+    this.dateFrom = this.dateTo = this.selectedPlace.availableFrom;
+    console.log(this.selectedPlace);
+    console.log(this.dateFrom, this.dateTo);
   }
 
   onCancel(){

@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Place } from '../../place.model';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { PlacesService } from '../../places.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-offer-bookings',
   templateUrl: './offer-bookings.page.html',
   styleUrls: ['./offer-bookings.page.scss'],
 })
-export class OfferBookingsPage implements OnInit {
+export class OfferBookingsPage implements OnInit, OnDestroy {
   place: Place | undefined | any;
+  private placeSub: Subscription | undefined;
 
   constructor(private route: ActivatedRoute, private navCtrl: NavController, private placesService: PlacesService) { }
 
@@ -25,9 +27,17 @@ export class OfferBookingsPage implements OnInit {
         console.log('Id za edit je null u ponudi bookinga');
         return;
       }else {
-        this.place = this.placesService.getPlace(id);
+        this.placeSub = this.placesService.getPlace(id).subscribe(place => {
+          this.place = place;
+        });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    if(this.placeSub) {
+      this.placeSub.unsubscribe();
+    }
   }
 
 }

@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonDatetime } from '@ionic/angular';
+import { PlacesService } from '../../places.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-offer',
@@ -20,7 +22,7 @@ export class NewOfferPage implements OnInit, AfterViewInit {
     this.dateSelected = formattedDate;
   }
 
-  constructor() { }
+  constructor(private placesService: PlacesService, private router: Router) { }
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -49,7 +51,18 @@ export class NewOfferPage implements OnInit, AfterViewInit {
   }
 
   onCreateOffer(){
-    console.log(this.form);
+    if (!this.form.valid){
+      console.log('Forma kod new offer nije validna', this.form);
+      return;
+    }
+    this.placesService.addPlace(this.form.value.title,
+      this.form.value.description,
+      +this.form.value.price,
+      new Date(this.form.value.dateFrom),
+      new Date(this.form.value.dateTo)
+    )
+    this.form.reset();
+    this.router.navigateByUrl('/places/tabs/offer');
   }
 
 }
