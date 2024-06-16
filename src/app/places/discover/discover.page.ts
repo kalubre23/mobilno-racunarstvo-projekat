@@ -3,6 +3,7 @@ import { PlacesService } from '../places.service';
 import { Place } from '../place.model';
 import { SegmentChangeEventDetail } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-discover',
@@ -10,14 +11,18 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./discover.page.scss'],
 })
 export class DiscoverPage implements OnInit, OnDestroy {
-  loadedPlaces: Place[] | undefined;
+  loadedPlaces: Place[] = [];
+  listedLoadedPlaces: Place[] = [];
+  relevantPlaces: Place[] = [];
   private placesSub: Subscription | undefined;
 
-  constructor(private placesService: PlacesService) { }
+  constructor(private placesService: PlacesService, private authService: AuthService) { }
 
   ngOnInit() {
     this.placesSub = this.placesService.places.subscribe(places => {
       this.loadedPlaces = places;
+      this.relevantPlaces = this.loadedPlaces;
+      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
     })
   }
 
@@ -32,6 +37,16 @@ export class DiscoverPage implements OnInit, OnDestroy {
     const customEvt = event as CustomEvent<SegmentChangeEventDetail>;
     console.log(customEvt.detail.value);
     console.log('Usao je u filter update');
+    if(customEvt.detail.value === 'all') {
+      this.relevantPlaces = this.loadedPlaces;
+      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+    } else {
+      //userId ne treba da bude moj jer ne treba da bookujem svoja mjesta
+      this.relevantPlaces = this.loadedPlaces.filter(
+        place => place.userId !== this.authService.userId
+      );
+      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+    }
   }
 
 }
