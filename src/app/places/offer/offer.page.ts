@@ -11,7 +11,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./offer.page.scss'],
 })
 export class OfferPage implements OnInit, OnDestroy {
-  offers: Place[] | undefined;
+  offers: Place[] | any;
+  isLoading: boolean = false;
   private placesSub: Subscription | undefined; 
 
   constructor(private placesService: PlacesService, private router: Router) { }
@@ -21,8 +22,24 @@ export class OfferPage implements OnInit, OnDestroy {
     //update ce se i ovde jer si sub
     this.placesSub = this.placesService.places.subscribe(places => {
       this.offers = places;
+      if(!places){
+        console.log('prazna mjesta u ngoninit');
+      }
     });
   }
+
+  ionViewWillEnter(){
+    this.isLoading = true;
+    //znaci kad treba da udje onda ce da posalje get za sva mjesta
+    //i update ce se u servisu a posto sam subscribovan u ngOnInit svakako ce se update i ovde
+    console.log('usao u ionwievwillenter', this.offers);
+
+    this.placesService.fetchPlaces().subscribe(
+      () => {this.isLoading = false;}
+    );
+    console.log('izvrsio se fetch', this.offers);
+  }
+
   //kada se izadje unsubscribe
   ngOnDestroy(): void {
     if(this.placesSub) {

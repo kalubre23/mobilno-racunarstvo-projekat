@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IonDatetime } from '@ionic/angular';
+import { IonDatetime, LoadingController } from '@ionic/angular';
 import { PlacesService } from '../../places.service';
 import { Router } from '@angular/router';
 
@@ -22,7 +22,8 @@ export class NewOfferPage implements OnInit, AfterViewInit {
     this.dateSelected = formattedDate;
   }
 
-  constructor(private placesService: PlacesService, private router: Router) { }
+  constructor(private placesService: PlacesService, 
+    private router: Router, private loadingCtrl: LoadingController) { }
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -55,14 +56,19 @@ export class NewOfferPage implements OnInit, AfterViewInit {
       console.log('Forma kod new offer nije validna', this.form);
       return;
     }
-    this.placesService.addPlace(this.form.value.title,
-      this.form.value.description,
-      +this.form.value.price,
-      new Date(this.form.value.dateFrom),
-      new Date(this.form.value.dateTo)
-    )
-    this.form.reset();
-    this.router.navigateByUrl('/places/tabs/offer');
+    this.loadingCtrl.create({message: 'Creatig offer...'}).then(loadingEl => {
+      loadingEl.present();
+      this.placesService.addPlace(this.form.value.title,
+        this.form.value.description,
+        +this.form.value.price,
+        new Date(this.form.value.dateFrom),
+        new Date(this.form.value.dateTo)
+      ).subscribe(() => {
+        loadingEl.dismiss();
+        this.form.reset();
+        this.router.navigateByUrl('/places/tabs/offer');
+      });
+    });
   }
 
 }
