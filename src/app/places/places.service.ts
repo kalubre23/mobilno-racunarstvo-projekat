@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Place } from './place.model';
 import { AuthService } from '../auth/auth.service';
-import { BehaviorSubject, delay, map, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, delay, map, of, switchMap, take, tap } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 //kao place samo bez id koji rucno dodam i napravim Place
@@ -150,6 +150,13 @@ export class PlacesService {
     let updatedPlaces: Place[];
     return this.places.pipe(
       take(1), switchMap(places => {
+        if (!places || places.length <= 0){
+          return this.fetchPlaces();
+        } else { 
+          return of(places);
+        }
+        
+      }), switchMap(places => {
         const updatedPlacesIndex = places.findIndex(pl => pl.id === placeId);
         const updatedPlaces = [...places];
         const oldPlace = updatedPlaces[updatedPlacesIndex];
@@ -161,9 +168,9 @@ export class PlacesService {
           oldPlace.availableFrom,
           oldPlace.availableTo,
           oldPlace.userId);
-          return this.http.put(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking/${placeId}.json`,
-            { ...updatedPlaces[updatedPlacesIndex], id: null}
-          );
+        return this.http.put(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking/${placeId}.json`,
+          { ...updatedPlaces[updatedPlacesIndex], id: null }
+        );
       }),
       tap(() => {
         this._places.next(updatedPlaces);
