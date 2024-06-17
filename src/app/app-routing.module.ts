@@ -15,12 +15,12 @@ const routes: Routes = [
   {
     path: 'places',
     loadChildren: () => import('./places/places.module').then( m => m.PlacesPageModule),
-    canActivate: [authGuard]
+    //canActivate: [authGuard]
   },
   {
     path: 'bookings',
     loadChildren: () => import('./bookings/bookings.module').then( m => m.BookingsPageModule),
-    canActivate: [authGuard]
+    //canActivate: [authGuard]
   }
 ];
 

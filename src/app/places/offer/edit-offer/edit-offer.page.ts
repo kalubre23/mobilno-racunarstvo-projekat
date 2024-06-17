@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlacesService } from '../../places.service';
-import { LoadingController, NavController } from '@ionic/angular';
+import { AlertController, LoadingController, NavController } from '@ionic/angular';
 import { Place } from '../../place.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -18,8 +18,12 @@ export class EditOfferPage implements OnInit, OnDestroy {
   isLoading: boolean = false;
   placeId: string = '';
 
-  constructor(private route: ActivatedRoute, private placesService: PlacesService,
-    private navCtrl: NavController, private router: Router, private loadingCtrl: LoadingController
+  constructor(private route: ActivatedRoute, 
+    private placesService: PlacesService,
+    private navCtrl: NavController, 
+    private router: Router, 
+    private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController,
   ) { }
 
   ngOnInit() {
@@ -49,6 +53,10 @@ export class EditOfferPage implements OnInit, OnDestroy {
             }),
           })
           this.isLoading = false;
+        }, error => {
+          this.alertCtrl.create({header: 'Error!', message: 'Place could not be loaded. Try again later.',
+             buttons: [{text: 'Ok', handler: () => this.router.navigateByUrl('/places/tabs/offer')}]})
+             .then(alertEl => {alertEl.present()});
         });
       }
     });
