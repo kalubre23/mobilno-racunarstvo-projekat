@@ -74,7 +74,8 @@ export class PlacesService {
     console.log('usao je u fetch places');
     return this.http.get<{[key: string]: placeData}>('https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking.json')
     .pipe(map(resData => {
-      console.log(resData);
+      //trebao sam u tap() da console log al nema veze
+      //console.log(resData);
       const places = [];
       for(const key in resData){
         if(resData.hasOwnProperty(key)){
@@ -84,12 +85,10 @@ export class PlacesService {
           ));
         }
       }
-      console.log(places);
       return places;
       //return [];
     }), tap(places => {
-      console.log('aaa');
-      console.log(places);
+      console.log(places, 'vraceni od servera');
       this._places.next(places);
     })
   );
@@ -139,21 +138,29 @@ export class PlacesService {
   }
 
   updatePlace(placeId: string, title: string, description: string){
-    //stavio sam kao fake delay 1s da bi se pokazao loading ctrl
-    return this.places.pipe(take(1), delay(1000),
-     tap(places => {
-      const updatedPlacesIndex = places.findIndex(pl => pl.id === placeId);
-      const updatedPlaces = [...places];
-      const oldPlace = updatedPlaces[updatedPlacesIndex];
-      updatedPlaces[updatedPlacesIndex] = new Place(oldPlace.id, 
-        title, 
-        description, 
-        oldPlace.imageUrl, 
-        oldPlace.price, 
-        oldPlace.availableFrom, 
-        oldPlace.availableTo, 
-        oldPlace.userId);
-      this._places.next(updatedPlaces);
-    }))
+    //switch map prvo lokalno updatuje place pa onda vraca drugi observable koji je put request
+    //i na kraju se u tap emituje promena
+    let updatedPlaces: Place[];
+    return this.places.pipe(
+      take(1), switchMap(places => {
+        const updatedPlacesIndex = places.findIndex(pl => pl.id === placeId);
+        const updatedPlaces = [...places];
+        const oldPlace = updatedPlaces[updatedPlacesIndex];
+        updatedPlaces[updatedPlacesIndex] = new Place(oldPlace.id,
+          title,
+          description,
+          oldPlace.imageUrl,
+          oldPlace.price,
+          oldPlace.availableFrom,
+          oldPlace.availableTo,
+          oldPlace.userId);
+          return this.http.put(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking/${placeId}.json`,
+            { ...updatedPlaces[updatedPlacesIndex], id: null}
+          );
+      }),
+      tap(() => {
+        this._places.next(updatedPlaces);
+      })
+      );
   }
 }
