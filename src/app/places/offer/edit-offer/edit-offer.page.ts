@@ -15,6 +15,8 @@ export class EditOfferPage implements OnInit, OnDestroy {
   place: Place | undefined | any;
   form: FormGroup | any;
   private placeSub: Subscription | undefined;
+  isLoading: boolean = false;
+  placeId: string = '';
 
   constructor(private route: ActivatedRoute, private placesService: PlacesService,
     private navCtrl: NavController, private router: Router, private loadingCtrl: LoadingController
@@ -31,6 +33,8 @@ export class EditOfferPage implements OnInit, OnDestroy {
         console.log('Id za edit je null');
         return;
       } else {
+        this.placeId = id;
+        this.isLoading = true;
         this.placeSub = this.placesService.getPlace(id).subscribe(place => {
           this.place = place;
           //ova forma zavisi od mjesta tako da treba da i ona bude u sibscribe
@@ -44,6 +48,7 @@ export class EditOfferPage implements OnInit, OnDestroy {
             validators: [Validators.required, Validators.maxLength(150)]
             }),
           })
+          this.isLoading = false;
         });
       }
     });

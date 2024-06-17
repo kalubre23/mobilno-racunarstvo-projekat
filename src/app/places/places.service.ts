@@ -63,9 +63,16 @@ export class PlacesService {
   //uzima mjesta i prosledjuje map metodi koja vraca to mjesto kao observable
   //ovo je nesta kao yield u python
   getPlace(id: string) {
-    return this.places.pipe(take(1), map(places => {
-      return {...places.find(p => p.id === id)};
-    })
+    // return this.places.pipe(take(1), map(places => {
+      //   return {...places.find(p => p.id === id)};
+      // })
+      // );
+      //moze i da se proveri dal postoji mjesto lokalno prije nego salje request
+    return this.http.get<placeData>(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking/${id}.json`)
+    .pipe(
+      map(placeData => {
+        return new Place(id, placeData.title, placeData.description, placeData.imageUrl, placeData.price, new Date(placeData.availableFrom), new Date(placeData.availableTo), placeData.userId)
+      })
     );
   }
 
