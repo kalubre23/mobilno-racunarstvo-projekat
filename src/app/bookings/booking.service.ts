@@ -56,9 +56,12 @@ export class BookingService {
   }
 
   cancelBooking(bookingId: string){
-    return this.bookings.pipe(take(1), delay(1000), tap(bookings => {
+    return this.http.delete(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/bookings/${bookingId}.json`)
+    .pipe(switchMap(() => {
+      return this.bookings;
+    }),take(1), tap(bookings => {
       this._bookings.next(bookings.filter(b => b.id !== bookingId))
-    }));
+    })); 
   }
 
 
