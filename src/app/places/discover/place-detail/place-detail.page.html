@@ -34,7 +34,7 @@
     </ion-row>
     <ion-row>
       <ion-col sizeSm="6" offsetSm="3">
-        <ion-img class="location-image" [src]="place.location.mapImage"></ion-img>
+        <ion-img role="button" (click)="onShowFullMap()" class="location-image" [src]="place.location.mapImage"></ion-img>
       </ion-col>
     </ion-row>
     <ion-row *ngIf="isBookable" class="ion-padding">
