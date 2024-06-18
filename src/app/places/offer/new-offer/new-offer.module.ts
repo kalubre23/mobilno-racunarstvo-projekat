@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { NewOfferPageRoutingModule } from './new-offer-routing.module';
 
 import { NewOfferPage } from './new-offer.page';
+import { LocationPickerComponent } from '../../../shared/pickers/location-picker/location-picker.component';
 
 @NgModule({
   imports: [
     CommonModule,
     ReactiveFormsModule,
     IonicModule,
-    NewOfferPageRoutingModule
+    NewOfferPageRoutingModule,
+    LocationPickerComponent
   ],
   declarations: [NewOfferPage]
 })
