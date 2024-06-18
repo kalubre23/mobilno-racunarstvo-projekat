@@ -18,16 +18,26 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col sizeSm="6" offsetSm="3" class="ion-text-center">
-        <p>{{place.description}}</p>
+      <ion-col sizeSm="6" offsetSm="3" class="ion-no-padding">
+        <p>Description: {{place.description}}</p>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col sizeSm="6" offsetSm="3" class="ion-text-center">
-        <p>{{place.price | currency}} per night</p>
+      <ion-col sizeSm="6" offsetSm="3" class="ion-no-padding">
+        <p>Price: {{place.price | currency}} per night</p>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="isBookable">
+    <ion-row>
+      <ion-col sizeSm="6" offsetSm="3" class="ion-no-padding">
+        <p>Address: {{place.location.address}}</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col sizeSm="6" offsetSm="3">
+        <ion-img class="location-image" [src]="place.location.mapImage"></ion-img>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="isBookable" class="ion-padding">
       <ion-col sizeSm="6" offsetSm="3" class="ion-text-center">
         <ion-button color="primary" (click)="onBookPlace()">Book</ion-button>
       </ion-col>
