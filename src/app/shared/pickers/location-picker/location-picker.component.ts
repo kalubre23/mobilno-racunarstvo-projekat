@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { MapModalComponent } from '../../map-modal/map-modal.component';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,8 @@ import { PlaceLocation } from '../../../places/location.model';
   styleUrls: ['./location-picker.component.scss'],
 })
 export class LocationPickerComponent  implements OnInit {
+  //MORA OUTPUT!!!!!!!! da bi ga slusao spolja
+  @Output() locationPick = new EventEmitter<PlaceLocation>();
   selectedLocationImage: string = '';
   isLoading = false;
 
@@ -48,6 +50,7 @@ export class LocationPickerComponent  implements OnInit {
           pickedLocation.mapImage = mapImageUrl;
           this.selectedLocationImage = mapImageUrl;
           this.isLoading = false;
+          this.locationPick.emit(pickedLocation);
           console.log('adresa', pickedLocation.address);
           console.log(pickedLocation.mapImage);
         });

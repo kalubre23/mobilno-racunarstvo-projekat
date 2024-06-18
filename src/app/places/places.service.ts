@@ -3,6 +3,7 @@ import { Place } from './place.model';
 import { AuthService } from '../auth/auth.service';
 import { BehaviorSubject, delay, map, of, switchMap, take, tap } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { PlaceLocation } from './location.model';
 
 //kao place samo bez id koji rucno dodam i napravim Place
 interface placeData{
@@ -12,7 +13,8 @@ interface placeData{
   imageUrl: string,
   price: number,
   title: string,
-  userId: string
+  userId: string,
+  location: PlaceLocation
 }
 
 
@@ -71,7 +73,7 @@ export class PlacesService {
     return this.http.get<placeData>(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking/${id}.json`)
     .pipe(
       map(placeData => {
-        return new Place(id, placeData.title, placeData.description, placeData.imageUrl, placeData.price, new Date(placeData.availableFrom), new Date(placeData.availableTo), placeData.userId)
+        return new Place(id, placeData.title, placeData.description, placeData.imageUrl, placeData.price, new Date(placeData.availableFrom), new Date(placeData.availableTo), placeData.userId, placeData.location);
       })
     );
   }
@@ -88,7 +90,7 @@ export class PlacesService {
         if(resData.hasOwnProperty(key)){
           places.push(new Place(key, resData[key].title, resData[key].description,
             resData[key].imageUrl, resData[key].price, new Date(resData[key].availableFrom),
-            new Date(resData[key].availableTo), resData[key].userId
+            new Date(resData[key].availableTo), resData[key].userId, resData[key].location
           ));
         }
       }
@@ -102,7 +104,7 @@ export class PlacesService {
   }
 
   addPlace(title: string, description: string, price: number, dateFrom: Date,
-    dateTo: Date
+    dateTo: Date, location: PlaceLocation
   ) {
     //neki dummy id
     //hard kodovana slika
@@ -115,7 +117,8 @@ export class PlacesService {
       price, 
       dateFrom, 
       dateTo, 
-      this.authService.userId
+      this.authService.userId,
+      location
     );
 
     // const headers = new HttpHeaders({
@@ -167,7 +170,9 @@ export class PlacesService {
           oldPlace.price,
           oldPlace.availableFrom,
           oldPlace.availableTo,
-          oldPlace.userId);
+          oldPlace.userId,
+          oldPlace.location
+        );
         return this.http.put(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking/${placeId}.json`,
           { ...updatedPlaces[updatedPlacesIndex], id: null }
         );
