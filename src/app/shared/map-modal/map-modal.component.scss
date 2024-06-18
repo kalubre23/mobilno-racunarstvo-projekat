@@ -5,7 +5,9 @@
 
     background-color: transparent;
     opacity: 0;
-    //posto mapa treba da se ucita prvo
+    //posto mapa treba da se ucita prvo onda je providna
+    //kada se mapa ucita desice se ova tranzicija
+    //kad god se promjeni opacity desice se ova tranzicija koja traje 150milisekundi
     transition: opacity 150ms ease-in;
 }
 
