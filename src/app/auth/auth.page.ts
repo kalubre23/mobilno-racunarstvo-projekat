@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './auth.service';
+import { AuthResponseData, AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-auth',
@@ -23,26 +24,43 @@ export class AuthPage implements OnInit {
 
   authenticate(email: string, password: string){
     this.isLoading = true;
-    this.authService.login();
     //da se tastatura zatvori sama keyboardClose
     this.loadingCtrl.create({keyboardClose: true, message: 'Logging...'}).then(
       loadingEl => {
         loadingEl.present();
-        this.authService.signup(email, password).subscribe(resData => {
-          console.log(resData);
-          this.isLoading = false;
-          loadingEl.dismiss();
-          this.router.navigateByUrl('/places/tabs/discover');
-        }, errRes => {
-          loadingEl.dismiss();
-          const code = errRes.error.error.message;
-          let message = 'Can not sign up, please try again!';
-          if(code === 'EMAIL_EXISTS'){
-            message = 'Email already exists';
-          }
-          this.showAlert(message);
-        });
-        
+        let authObs: Observable<AuthResponseData>;
+        if(this.isLogin) {
+          authObs = this.authService.login(email, password);
+        } else {
+          authObs = this.authService.signup(email, password);
+        }
+        if(authObs){
+          authObs.subscribe({
+            next: (resData) => {
+                    console.log(resData);
+                    this.isLoading = false;
+                    loadingEl.dismiss();
+                    this.router.navigateByUrl('/places/tabs/discover');}, 
+            error: (errRes) => {
+                    loadingEl.dismiss();
+                    console.log(errRes);
+                    const code = errRes.error.error.message;
+                    let message = 'ERROR!';
+                    if(code === 'EMAIL_EXISTS'){
+                      message = 'Email already exists';
+                    } else if (code === 'EMAIL_NOT_FOUND'){
+                      message = 'Email could not be found';
+                    } else if (code === 'INVALID_PASSWORD') {
+                      message = 'Password is invalid';
+                    } else if (code === 'INVALID_LOGIN_CREDENTIALS') {
+                      message = 'Invalid email or password';
+                    }
+                    this.showAlert(message);}
+                  }
+          );
+        } else {
+          console.log('authObs je null');
+        }
       }
     );
   }

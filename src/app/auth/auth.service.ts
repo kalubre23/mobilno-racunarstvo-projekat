@@ -2,14 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 
-interface AuthResponseData{
-  kind: string;
+export interface AuthResponseData{
   idToken: string;
   email: string;
   refreshToken:	string;
   expiresIn: string;
   localId: string;
-  registered: boolean;
+  registered?: boolean;
 }
 
 
@@ -31,13 +30,16 @@ export class AuthService {
   }
 
   signup(email: string, password: string){
-    return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`,
+    return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`,
       {email: email, password: password, returnSecureToken: true}
     );
   }
 
-  login() {
-    this._isAuth = true;
+  login(email: string, password: string) {
+    //this._isAuth = true;
+    return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`,
+      { email: email, password: password}
+    );
   }
 
   logout() {
