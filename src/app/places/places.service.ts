@@ -109,25 +109,30 @@ export class PlacesService {
     //neki dummy id
     //hard kodovana slika
     let generatedId: string;
-    const newPlace = new Place(
-      Math.random().toString(), 
-      title, 
-      description,
-      'https://eminentnekretnine.rs/slike/izdavanje-kuca-beograd-EwstDDpDSC.jpg', 
-      price, 
-      dateFrom, 
-      dateTo, 
-      this.authService.userId,
-      location
-    );
+    let newPlace: Place;
+    return this.authService.userId.pipe(take(1), switchMap(userId => {
+      if(!userId){
+        throw new Error('uuserId je null u placesService/addPlace');
+      }
+      newPlace = new Place(
+        Math.random().toString(),
+        title,
+        description,
+        'https://eminentnekretnine.rs/slike/izdavanje-kuca-beograd-EwstDDpDSC.jpg',
+        price,
+        dateFrom,
+        dateTo,
+        userId,
+        location
+      );
 
-    // const headers = new HttpHeaders({
-    //   'Content-Type': 'application/json',
-    //   'Access-Control-Allow-Origin': '*'
-    // });
-
-    console.log(newPlace);
-    return this.http.post<{ name: string }>('https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking.json', { ...newPlace, id: null }).pipe(
+      // const headers = new HttpHeaders({
+      //   'Content-Type': 'application/json',
+      //   'Access-Control-Allow-Origin': '*'
+      // });
+      console.log(newPlace);
+      return this.http.post<{ name: string }>('https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/offer-booking.json', { ...newPlace, id: null })
+    }),
       switchMap(resData => {
         generatedId = resData.name;
         return this.places;

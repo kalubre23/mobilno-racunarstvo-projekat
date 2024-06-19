@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { BehaviorSubject, map, tap } from 'rxjs';
+import { User } from './user.model';
 
 export interface AuthResponseData{
   idToken: string;
@@ -16,33 +18,54 @@ export interface AuthResponseData{
   providedIn: 'root'
 })
 export class AuthService {
-  private _isAuth = false;
-  private _userId = '';
+  private _user = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) { }
 
   get userId() {
-    return this._userId;
+    return this._user.asObservable().pipe(map(user => {
+      if(user){
+        return user.id;
+      } else {
+        return null;
+      }
+    }));
   }
 
   get isAuth() {
-    return this._isAuth;
+    return this._user.asObservable().pipe(map(user => 
+      {
+        if(user){
+          return !!user.token;
+        } else {
+          return false;
+        }
+      })
+    );
   }
+  
 
   signup(email: string, password: string){
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`,
       {email: email, password: password, returnSecureToken: true}
-    );
+    ).pipe(tap(this.setUserData.bind(this))); 
   }
 
   login(email: string, password: string) {
     //this._isAuth = true;
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`,
       { email: email, password: password}
-    );
+    ).pipe(tap(this.setUserData.bind(this)));
   }
 
   logout() {
-    this._isAuth = false;
+    this._user.next(null);
   }
+
+  private setUserData(userData: AuthResponseData) {
+      const expirationTime = new Date(new Date().getTime() + (+userData.expiresIn * 1000));
+      this._user.next(new User(userData.localId,
+        userData.email, userData.idToken, expirationTime));
+  }
+  
 }

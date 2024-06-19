@@ -39,18 +39,22 @@ export class BookingService {
     dateTo: Date)
     {
       let generatedId: string;
-      const newBooking = new Booking(Math.random().toString(),
-      placeId, this.authService.userId, placeTitle, placeImage, firstName, lastName,
-      guestNumber, dateFrom, dateTo);
-
-    return this.http.post<{name: string}>('https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/bookings.json', {...newBooking, id:null})
-    .pipe(switchMap(resData => {
+      let newBooking: Booking;
+      return this.authService.userId.pipe(take(1), switchMap(userId => {
+          if(!userId){
+            throw new Error('userId u bookingService/newBooking je null');
+          }
+          newBooking = new Booking(Math.random().toString(),
+          placeId, userId, placeTitle, placeImage, firstName, lastName,
+          guestNumber, dateFrom, dateTo);
+          return this.http.post<{name: string}>('https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/bookings.json', {...newBooking, id:null})
+    }), switchMap(resData => {
       generatedId = resData.name;
       return this.bookings;
     }), take(1), tap(bookings => {
       newBooking.id = generatedId;
       this._bookings.next(bookings.concat(newBooking));
-    })
+    }) 
   );
     
   }
@@ -67,8 +71,12 @@ export class BookingService {
 
   fetchBookings(){
     //treba da vrati samo bookinge koje je korisnik kreirao preko url parametara
-    return this.http.get<{[key: string]: bookingData}>(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/bookings.json?orderBy="userId"&equalTo="${this.authService.userId}"`)
-    .pipe(map(
+    return this.authService.userId.pipe(switchMap(userId => {
+      if(!userId){
+        throw new Error('userId je null u booking.service/fetchBookings');
+      }
+      return this.http.get<{[key: string]: bookingData}>(`https://mybookingapp-5d17b-default-rtdb.europe-west1.firebasedatabase.app/bookings.json?orderBy="userId"&equalTo="${userId}"`);
+    }), map(
       bookingData => {
         const bookings = [];
         for (const key in bookingData) {
