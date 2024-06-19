@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   googleMapsApi: 'AIzaSyAdPdSJSBHVg879UoNNs6YtyKueTIURlU4',
-  signatureKey: 'z7IikB1xuhaxOSkHVRCN-WEYgBI='
+  signatureKey: 'z7IikB1xuhaxOSkHVRCN-WEYgBI=',
+  firebaseApiKey: 'AIzaSyAdPdSJSBHVg879UoNNs6YtyKueTIURlU4'
 };
 
 /*
